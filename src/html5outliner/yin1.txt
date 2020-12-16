@@ -1,0 +1,14 @@
+<!doctype html>
+<title>Hello, world!</title>
+<body>
+<section>aaa</section>
+<h1>This is a section</h1>
+<section>aaa</section>
+<section><h1>And this a subsection!</h1></section>
+<section>aaa</section>
+<h1>This is a 2 section</h1>
+<section>aaa
+ <section>bbb</section>
+ <h1>this is 3</h1>
+ <section>bbb</section>
+</section>
