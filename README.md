@@ -18,7 +18,7 @@
     │   └── main.cc
     ├── testfind
     │   └── main.cc
-    └── tree
+    └── tree // 简单的目录tree命令
         ├── a.out
         └── main.cc
 
