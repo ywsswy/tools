@@ -9,7 +9,7 @@
     ├── sorthistory
     │   ├── main.cc
     │   └── README.md
-    ├── str_serilize
+    ├── str_serilize // 使用rapidjson进行编码解码
     │   ├── a.out
     │   ├── buf
     │   └── main.cc
