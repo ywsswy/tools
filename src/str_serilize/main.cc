@@ -5,20 +5,32 @@
 #include <iostream>
 #include <fstream>
 
-std::string Dom2String(rapidjson::Document &d)
-{
-     rapidjson::StringBuffer buffer;
-     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-     d.Accept(writer);
-     return buffer.GetString();
+std::string DocumentToString(rapidjson::Document& d, const int indent = 0) { 
+  rapidjson::StringBuffer buffer;
+  if (indent == 0) {
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    d.Accept(writer);
+    return buffer.GetString();
+  } else {
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+    writer.SetIndent(' ', indent);
+    d.Accept(writer);
+    return buffer.GetString();
+  }
 }
 
-std::string Value2String(rapidjson::Value &d)
-{
-     rapidjson::StringBuffer buffer;
-     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-     d.Accept(writer);
-     return buffer.GetString();
+std::string ValueToString(rapidjson::Value &d, const int indent = 0) {
+  rapidjson::StringBuffer buffer;
+  if (indent == 0) {
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    d.Accept(writer);
+    return buffer.GetString();
+  } else {
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+    writer.SetIndent(' ', indent);
+    d.Accept(writer);
+    return buffer.GetString();
+  }
 }
 
 void CreateString(const std::string &name, const std::string &value, rapidjson::Document &doc)
@@ -56,7 +68,7 @@ std::string Serialize(const std::string &raw_str)
 {
     rapidjson::Document a(rapidjson::kObjectType);
     CreateString("a", raw_str, a);
-    std::string s = Dom2String(a);
+    std::string s = DocumentToString(a);
     if (s.size() <= 8)
     {
         return "YWS Error";
