@@ -7,36 +7,57 @@
 #include <list>
 #include <map>
 #include <vector>
-//#define YWATCH
-class YPrint
-{
-public:
-    static int indent_;
-    template<typename T> static void W(const std::string &info, const T &x, bool clr = false)
-    {
-#ifdef YWATCH
-        if (clr) system("clear"); //system("cls"); in windows
-        std::cout << "\n\\******************\n" << info << "\n" << x << "*\\\n";
-#endif
-    }
-};
-int YPrint::indent_ = 0;
-#define YOVERLOAD typename T> std::ostream &operator << (std::ostream &os, const std::
-#define YPRINT(...) YOVERLOAD __VA_ARGS__ > &st){\
-    YPrint::indent_++;\
-    os << "OBJECT(size=" << st.size() << ")\n";\
-    typename std:: __VA_ARGS__ >::const_iterator it = st.begin();\
-    for (size_t i = 0; i < st.size(); i++, it++){\
-        for(int j=0;j<YPrint::indent_;j++){os << "\t";}\
-        os << "[" << i << "]=" << *it << "*\n";\
-    }YPrint::indent_--;\
-    return os;\
-}
-template<typename S, YOVERLOAD pair<S, T> &st) { return os << "{" << st.first << "}" << st.second; }
-template<typename S, YPRINT(map<S, T)
-template<YPRINT(list<T)
-template<YPRINT(vector<T)
 
+using namespace std;
+#ifdef YDELO
+int ydelon = 0;
+template<typename T,typename S>
+ostream &operator<<(ostream &os,const pair<T,S> &it){
+    return  os << it.first << " " << it.second;
+}
+template<typename T,typename S>
+ostream &operator<<(ostream &os,const map<T,S> &st){
+  int n = (ydelon==0?st.size():ydelon);
+  os << " size=" << st.size() << " show=" << n << endl;
+  typename map<T,S>::const_iterator it = st.begin();
+  for(int i = 0;i<n && i<st.size();i++,it++){
+    os << i << " " << *it << "*" << endl;
+  }
+  return os;
+}
+template<typename T>
+ostream &operator<<(ostream &os,const list<T> &st){
+  int n = (ydelon==0?st.size():ydelon);
+  os << " size=" << st.size() << " show=" << n << endl;
+  typename list<T>::const_iterator it = st.begin();
+  for(int i = 0;i<n && i<st.size();i++,it++){
+    os << i << " " << *it << "*" << endl;
+  }
+  return os;
+}
+template<typename T>
+ostream &operator<<(ostream &os,const vector<T> &st){
+  int n = (ydelon==0?st.size():ydelon);
+  os << " size=" << st.size() << " show=" << n << endl;
+  typename vector<T>::const_iterator it = st.begin();
+  for(int i = 0;i<n && i<st.size();i++,it++){
+    os << i << " " << *it << "*" << endl;
+  }
+  return os;
+}
+//for built-in type(except c_array) & map & list & vector
+template<typename T>
+void yPrint(const string &info,const T &x,int n = 0,bool clr = true){
+  ydelon = n;
+  if(clr){
+    system("cls");//"clear" in linux
+  }
+  cout << endl << "\\**********************" << endl;
+  cout << info << endl;
+  cout << x << "**********************\\" << endl;
+  return;
+}
+#endif
 
 class Args
 {
