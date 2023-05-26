@@ -357,7 +357,7 @@ std::string UnSerialize(const std::string& raw_str) {
     while (loc != std::string::npos) {
       finals.replace(loc, item.first.size(), " ");
       finals[loc] = item.second;
-      loc = finals.find(item.first);
+      loc = finals.find(item.first, loc+1);
     }
   }
   return finals;
