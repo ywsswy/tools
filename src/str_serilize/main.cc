@@ -352,12 +352,21 @@ std::string UnSerialize(const std::string& raw_str) {
   std::string finals = raw_str;
   // 把全部可替换的进行搜索,直到搜不到为止
   std::map<std::string, unsigned char> redis_escape_map = GlobalConfig::GetInstance().GetRedisEscapeMap();
+  size_t min_len = redis_escape_map.begin()->first.size();
+  size_t max_len = redis_escape_map.begin()->first.size();
   for (const auto& item : redis_escape_map) {
-    size_t loc = finals.find(item.first);
-    while (loc != std::string::npos) {
-      finals.replace(loc, item.first.size(), " ");
-      finals[loc] = item.second;
-      loc = finals.find(item.first, loc+1);
+    max_len = std::max(item.first.size(), max_len);
+    min_len = std::min(item.first.size(), min_len);
+  }
+  for (size_t idx = 0; idx < finals.size(); ++idx) {
+    for (size_t len = min_len; len <= max_len; ++len) {
+      std::string tmp = finals.substr(idx, len);
+      auto&& iter = redis_escape_map.find(tmp);
+      if (iter != redis_escape_map.end()) {
+        finals.replace(idx, iter->first.size(), " ");
+        finals[idx] = iter->second;
+        break;
+      }
     }
   }
   return finals;
