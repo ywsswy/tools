@@ -350,6 +350,22 @@ class GlobalConfig {
 
 std::string UnSerialize(const std::string& raw_str) {
   std::string finals = raw_str;
+  while(true) {
+    size_t i = finals.find('\n');
+    if (i != std::string::npos) {
+      finals.replace(i, 1, "");
+    } else {
+      break;
+    }
+  }
+  while(true) {
+    size_t i = finals.find('\r');
+    if (i != std::string::npos) {
+      finals.replace(i, 1, "");
+    } else {
+      break;
+    }
+  }
   // 把全部可替换的进行搜索,直到搜不到为止
   std::map<std::string, unsigned char> redis_escape_map = GlobalConfig::GetInstance().GetRedisEscapeMap();
   size_t min_len = redis_escape_map.begin()->first.size();
