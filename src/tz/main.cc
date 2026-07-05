@@ -86,29 +86,40 @@ void checkValid(const int type/*cal by last year*/, const std::vector<std::pair<
   for(auto&& i : ve_now) {
     sum += i.first;
   }
+  std::cout << "sum:" << sum << std::endl;
   auto abcrange = type2lesslargepercent[type];
-  int idx = ve_last_year[2].second;
-  std::cout << idx << std::endl;
-  std::cout << "1) " << type_str[0] << " should:[" << sum * abcrange[0].first/100 << ", " << sum*abcrange[0].second/100 << "], now:" << ve_now[idx].first << "(" << ve_now[idx].second << ")" << std::endl;
-  std::cout << "2): [" << sum * abcrange[1].first/100 << ", " << sum*abcrange[1].second/100 << "]" << std::endl;
-  std::cout << "3): [" << sum * abcrange[2].first/100 << ", " << sum*abcrange[2].second/100 << "]" << std::endl;
+  for (int i = 0; i < 3; ++i) {
+    int idx = ve_last_year[2-i].second;
+    double should_min = sum * abcrange[i].first/100;
+    double should_max = sum * abcrange[i].second/100;
+    double now = ve_now[idx].first;
+    std::cout << i+1 << ") " << type_str[i] << " should:[" << should_min << ", " << should_max << "], now:" << now << "(" << ve_now[idx].second << ")";
+    if (now < should_min) {
+      std::cout << " NEED MORE(at least " << should_min - now << ")";
+    } else if (now > should_max) {
+      std::cout << " NEED LESS(at least " << now - should_max << ")";
+    }
+    std::cout << std::endl;
+  }
 }
 
-int main() {
-  init_type2percent();
-  double ren = 0;
-  double mei = 0;
-  double jin = 0;
-  double hong =  0;
-  double bannei = 0;
-  double banwai = 0;
-  double meilyp = 0;
-  double jinlyp = 0;
-  double honglyp =  0;
-  double banneilyp = 0;
-  double banwailyp = 0;
-  std::cin >> ren >> mei >> jin >> hong >> bannei >> banwai
-           >> meilyp >> jinlyp >> honglyp >> banneilyp >> banwailyp;
+double ren = 0;
+double mei = 0;
+double jin = 0;
+double hong =  0;
+double bannei = 0;
+double banwai = 0;
+double meilyp = 0;
+double jinlyp = 0;
+double honglyp =  0;
+double banneilyp = 0;
+double banwailyp = 0;
+double sum_bx = mei + jin + hong;
+double sum_wl = bannei + banwai;
+double sum = ren + sum_bx + sum_wl;
+
+void PrintNow(const std::string& info) {
+  std::cout << "=================  " << info << std::endl;
   std::cout << "ren:" << ren << std::endl
             << "mei:" << mei << std::endl
             << "jin:" << jin << std::endl
@@ -120,13 +131,13 @@ int main() {
             << "honglyp:" << honglyp << std::endl
             << "banneilyp:" << banneilyp << std::endl
             << "banwailyp:" << banwailyp << std::endl;
-  double sum_bx = mei + jin + hong;
-  double sum_wl = bannei + banwai;
-  double sum = ren + sum_bx + sum_wl;
+  sum_bx = mei + jin + hong;
+  sum_wl = bannei + banwai;
+  sum = ren + sum_bx + sum_wl;
   std::cout << "sum_bx:" << sum_bx << std::endl;
   std::cout << "sum_wl:" << sum_wl << std::endl;
   std::cout << "sum:" << sum << std::endl;
-  // bigtype(cal by last year)
+  // bigtype(cal by last year) ren sum_bx sum_wl
   std::vector<std::pair<double, int>> vebig;
   vebig.push_back(std::make_pair(1, 0));  // renlyp
   vebig.push_back(std::make_pair((meilyp*0.01 + jinlyp*0.01 + honglyp*0.01 + 3)/3, 1));
@@ -139,18 +150,23 @@ int main() {
   vebignow.push_back(std::make_pair(sum_bx, "sum_bx"));
   vebignow.push_back(std::make_pair(sum_wl, "sum_wl"));
   checkValid(bigtype, vebig, vebignow);
-/*
-  std::vector<std::pair<double, int>> ve;
-  ve.push_back(std::make_pair(ren, 1));
-  ve.push_back(std::make_pair(sum_bx, 2));
-  ve.push_back(std::make_pair(sum_wl, 3));
-  for (auto&& i : ve) {
-    std::cout << i.second << ":" << i.first << std::endl;
-  }
-  std::sort(ve.begin(), ve.end());
-  for (auto&& i : ve) {
-    std::cout << i.second << ":" << i.first << std::endl;
-  }
-  std::cout << type(ve) << std::endl;
-*/
+  // smalltype(cal by last year) mei jin hong
+  std::vector<std::pair<double, int>> vesmalllyp;
+  vesmalllyp.push_back(std::make_pair(meilyp*0.01 + 1, 0));
+  vesmalllyp.push_back(std::make_pair(jinlyp*0.01 + 1, 1));
+  vesmalllyp.push_back(std::make_pair(honglyp*0.01 + 1, 2));
+  std::sort(vesmalllyp.begin(), vesmalllyp.end());
+  int smalltype = type(vesmalllyp);
+  std::cout << "smalltype:" << type2str[smalltype] << std::endl;
+  std::vector<std::pair<double, std::string>> vesmallnow;
+  vesmallnow.push_back(std::make_pair(mei, "mei"));
+  vesmallnow.push_back(std::make_pair(jin, "jin"));
+  vesmallnow.push_back(std::make_pair(hong, "hong"));
+  checkValid(smalltype, vesmalllyp, vesmallnow);
+}
+int main() {
+  init_type2percent();
+  std::cin >> ren >> mei >> jin >> hong >> bannei >> banwai
+           >> meilyp >> jinlyp >> honglyp >> banneilyp >> banwailyp;
+  PrintNow("now");
 }
