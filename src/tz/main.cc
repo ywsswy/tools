@@ -27,8 +27,6 @@ std::map<int, std::string> type2str;
 int type(std::vector<std::pair<double, int>>& ve) {
   double gap12 = (ve[1].first - ve[0].first) / ve[1].first * 100;
   double gap23 = (ve[2].first - ve[1].first) / ve[2].first * 100;
-  std::cout << gap12 << std::endl;
-  std::cout << gap23 << std::endl;
   bool same12 = false;
   bool same23 = false;
   if (gap12 <= 4) {
@@ -47,6 +45,26 @@ int type(std::vector<std::pair<double, int>>& ve) {
     return 2;
   }
   return 1;
+}
+
+std::vector<std::string> SplitString(const std::string& raw, const std::string& inter, const bool ignore_empty) {
+  std::vector<std::string> vec;
+  size_t n = 0;
+  size_t old = 0;
+  while (n != std::string::npos) {
+    n = raw.find(inter, n);
+    if (n != std::string::npos) {
+      if (!ignore_empty || n != old) {
+        vec.push_back(raw.substr(old, n - old));
+      }
+      n += inter.size();
+      old = n;
+    }
+  }
+  if (!ignore_empty || old < raw.size()) {
+    vec.push_back(raw.substr(old, raw.size() - old));
+  }
+  return vec;
 }
 
 void init_type2percent() {
@@ -118,22 +136,30 @@ double sum_bx = mei + jin + hong;
 double sum_wl = bannei + banwai;
 double sum = ren + sum_bx + sum_wl;
 
+double change_ren = 0;
+double change_mei = 0;
+double change_jin = 0;
+double change_hong =  0;
+double change_bannei = 0;
+double change_banwai = 0;
+
+
 void PrintNow(const std::string& info) {
   std::cout << "=================  " << info << std::endl;
-  std::cout << "ren:" << ren << std::endl
-            << "mei:" << mei << std::endl
-            << "jin:" << jin << std::endl
-            << "hong:" << hong << std::endl
-            << "bannei:" << bannei << std::endl
-            << "banwai:" << banwai << std::endl
+  std::cout << "ren:" << ren+change_ren << std::endl
+            << "mei:" << mei+change_mei << std::endl
+            << "jin:" << jin+change_jin << std::endl
+            << "hong:" << hong+change_hong << std::endl
+            << "bannei:" << bannei+change_bannei << std::endl
+            << "banwai:" << banwai+change_banwai << std::endl
             << "meilyp:" << meilyp << std::endl
             << "jinlyp:" << jinlyp << std::endl
             << "honglyp:" << honglyp << std::endl
             << "banneilyp:" << banneilyp << std::endl
             << "banwailyp:" << banwailyp << std::endl;
-  sum_bx = mei + jin + hong;
-  sum_wl = bannei + banwai;
-  sum = ren + sum_bx + sum_wl;
+  sum_bx = mei + jin + hong + change_mei + change_jin + change_hong;
+  sum_wl = bannei + banwai + change_bannei + change_banwai;
+  sum = ren + change_ren + sum_bx + sum_wl;
   std::cout << "sum_bx:" << sum_bx << std::endl;
   std::cout << "sum_wl:" << sum_wl << std::endl;
   std::cout << "sum:" << sum << std::endl;
@@ -146,7 +172,7 @@ void PrintNow(const std::string& info) {
   int bigtype = type(vebig);
   std::cout << "bigtype:" << type2str[bigtype] << std::endl;
   std::vector<std::pair<double, std::string>> vebignow;
-  vebignow.push_back(std::make_pair(ren, "ren"));
+  vebignow.push_back(std::make_pair(ren + change_ren, "ren"));
   vebignow.push_back(std::make_pair(sum_bx, "sum_bx"));
   vebignow.push_back(std::make_pair(sum_wl, "sum_wl"));
   checkValid(bigtype, vebig, vebignow);
@@ -159,14 +185,69 @@ void PrintNow(const std::string& info) {
   int smalltype = type(vesmalllyp);
   std::cout << "smalltype:" << type2str[smalltype] << std::endl;
   std::vector<std::pair<double, std::string>> vesmallnow;
-  vesmallnow.push_back(std::make_pair(mei, "mei"));
-  vesmallnow.push_back(std::make_pair(jin, "jin"));
-  vesmallnow.push_back(std::make_pair(hong, "hong"));
+  vesmallnow.push_back(std::make_pair(mei + change_mei, "mei"));
+  vesmallnow.push_back(std::make_pair(jin + change_jin, "jin"));
+  vesmallnow.push_back(std::make_pair(hong + change_hong, "hong"));
   checkValid(smalltype, vesmalllyp, vesmallnow);
 }
+
+void resetChange() {
+  change_ren = 0;
+  change_mei = 0;
+  change_jin = 0;
+  change_hong =  0;
+  change_bannei = 0;
+  change_banwai = 0;
+}
+
+void updateChange(const std::string& type, const double change) {
+  if (type == "1") {
+    change_ren += change;
+  } else if (type == "2") {
+    change_mei += change;
+  } else if (type == "3") {
+    change_jin += change;
+  } else if (type == "4") {
+    change_hong += change;
+  } else if (type == "5") {
+    change_bannei += change;
+  } else if (type == "6") {
+    change_banwai += change;
+  } else {
+    std::cout << "WTFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" << std::endl;
+  }
+}
+
+
 int main() {
   init_type2percent();
   std::cin >> ren >> mei >> jin >> hong >> bannei >> banwai
            >> meilyp >> jinlyp >> honglyp >> banneilyp >> banwailyp;
   PrintNow("now");
+  // change_eg: 1->3,3.5;4->2,2.7
+  std::string input;
+  while(getline(std::cin, input)) {
+    if (input.size() == 0) {
+      continue;
+    }
+    std::vector<std::string> sp1 = SplitString(input, ";", true);
+    resetChange();
+    for (auto&& input2 : sp1) {
+      std::vector<std::string> sp2 = SplitString(input2, "->", true);
+      if (sp2.size() != 2) {
+        std::cout << "err_input" << std::endl;
+        return 0;
+      }
+      std::vector<std::string> sp3 = SplitString(sp2[1], ",", true);
+      if (sp3.size() != 2) {
+        std::cout << "err_input" << std::endl;
+        return 0;
+      }
+      double change = std::stod(sp3[1]);
+      std::cout << change << std::endl;
+      updateChange(sp2[0], -change);
+      updateChange(sp3[0], change);
+    }
+    PrintNow("after change" + input);
+  }
 }
