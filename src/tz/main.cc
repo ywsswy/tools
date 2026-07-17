@@ -146,12 +146,12 @@ double change_banwai = 0;
 
 void PrintNow(const std::string& info) {
   std::cout << "=================  " << info << std::endl;
-  std::cout << "ren:" << ren+change_ren << std::endl
-            << "mei:" << mei+change_mei << std::endl
-            << "jin:" << jin+change_jin << std::endl
-            << "hong:" << hong+change_hong << std::endl
-            << "bannei:" << bannei+change_bannei << std::endl
-            << "banwai:" << banwai+change_banwai << std::endl
+  std::cout << "1 ren:" << ren+change_ren << std::endl
+            << "2 mei:" << mei+change_mei << std::endl
+            << "3 jin:" << jin+change_jin << std::endl
+            << "4 hong:" << hong+change_hong << std::endl
+            << "5 bannei:" << bannei+change_bannei << std::endl
+            << "6 banwai:" << banwai+change_banwai << std::endl
             << "meilyp:" << meilyp << std::endl
             << "jinlyp:" << jinlyp << std::endl
             << "honglyp:" << honglyp << std::endl
@@ -189,6 +189,7 @@ void PrintNow(const std::string& info) {
   vesmallnow.push_back(std::make_pair(jin + change_jin, "jin"));
   vesmallnow.push_back(std::make_pair(hong + change_hong, "hong"));
   checkValid(smalltype, vesmalllyp, vesmallnow);
+  std::cout << "please input your change:" << std::endl;
 }
 
 void resetChange() {
